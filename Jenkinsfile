@@ -37,8 +37,8 @@ pipeline {
                 }
             }
         }
-[11:33 AM]
-stage('docker push') {
+
+        stage('docker push') {
             agent any
             steps {
                 echo 'Pushing image to registry'
