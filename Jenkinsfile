@@ -17,7 +17,7 @@ pipeline {
             }
         }
         stage('sonarqube') {
-        agent {
+            agent {
             docker { image 'sonarsource/sonar-scanner-cli:latest' }
             steps {
                 unstash 'build'
