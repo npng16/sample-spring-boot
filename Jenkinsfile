@@ -1,6 +1,6 @@
 pipeline {
     agent none
-        environment {
+    environment {
         ENV_DOCKER = credentials('docker')
         DOCKERIMAGE = "sample-spring-boot"
         EKS_CLUSTER_NAME = "demo-cluster"
@@ -14,16 +14,17 @@ pipeline {
             }
             steps {
                 sh 'chmod +x gradlew && ./gradlew build jacocoTestReport'
+                stash includes: 'build/*/', name: 'build'
             }
         }
         stage('sonarqube') {
             agent {
-            docker { image 'sonarsource/sonar-scanner-cli:latest' }
+                docker { image 'sonarsource/sonar-scanner-cli:latest' }
+            }
             steps {
                 unstash 'build'
                 sh 'sonar-scanner'
             }
-        }
         }
         stage('docker build') {
             agent any
@@ -36,23 +37,23 @@ pipeline {
                 }
             }
         }
-        stage('docker push') {
+[11:33 AM]
+stage('docker push') {
             agent any
             steps {
                 echo 'Pushing image to registry'
 
                 script {
-                    docker.withRegistry('', 'dockerhub') {
+                    docker.withRegistry('', 'docker') {
                         image.push("$BUILD_ID")
                         image.push('latest')
                     }
                 }
             }
         }
-
         stage('Deploy App') {
             agent {
-                docker{
+                docker {
                     image 'jshimko/kube-tools-aws:3.8.1'
                     args '-u root --privileged'
                 }
@@ -66,7 +67,6 @@ pipeline {
                     sh "kubectl set image deployment sample-spring-boot -n david-delgado springboot-sample=$ENV_DOCKER_USR/$DOCKERIMAGE:$BUILD_ID"
                 }
             }
+        }
     }
-
-}
 }
