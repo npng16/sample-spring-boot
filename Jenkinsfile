@@ -4,7 +4,7 @@ pipeline {
         ENV_DOCKER = credentials('docker')
         DOCKERIMAGE = "sample-spring-boot"
         EKS_CLUSTER_NAME = "demo-cluster"
-        SONAR_TOKEN = credentials('sonar-token')
+        SONAR_TOKEN = credentials('sonnar-token')
         image = ''
     }
     stages {
